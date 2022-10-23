@@ -20,4 +20,4 @@ jobs:
           pip install -r dev_requirements.txt
       - name: Test
         run: |
-          python -m pytest --import-mode=append tests/
+          python -m pytest --import-mode=append tests/ -ra -q
