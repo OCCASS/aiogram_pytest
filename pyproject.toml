@@ -17,8 +17,3 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/OCCCAS/aiogram_unittest"
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra -q"
-testpaths = ["tests"]
