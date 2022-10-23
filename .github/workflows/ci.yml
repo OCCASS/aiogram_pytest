@@ -29,8 +29,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
-        run: |
-          pipenv install --deploy --dev
+        run: pipenv install
       - name: Run test suite
         run: |
           pipenv run test -v
