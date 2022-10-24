@@ -9,20 +9,21 @@
 #### Simple bot:
 
 ```python
-from aiogram import Bot, Dispatcher, types, executor
+from aiogram import Bot, Dispatcher, types
+from aiogram.fsm.context import FSMContext
 
 # Please, keep your bot tokens on environments, this code only example
 bot = Bot('123456789:AABBCCDDEEFFaabbccddeeff-1234567890')
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 
-@dp.message_handler()
-async def echo(message: types.Message):
+@dp.message()
+async def echo(message: types.Message, state: FSMContext) -> None:
     await message.answer(message.text)
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    dp.run_polling(bot)
 
 
 ```

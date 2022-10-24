@@ -38,6 +38,7 @@ CHAT_PHOTO = DatasetItem(
 PHOTO = DatasetItem(
     {
         "file_id": "AgADBAADFak0G88YZAf8OAug7bHyS9x2ZxkABHVfpJywcloRAAGAAQABAg",
+        "file_unique_id": "file_unique_id",
         "file_size": 1101,
         "width": 90,
         "height": 51,
@@ -53,6 +54,7 @@ AUDIO = DatasetItem(
         "performer": "The Best Singer",
         "file_id": "CQADAgADbQEAAsnrIUpNoRRNsH7_hAI",
         "file_size": 9507774,
+        "file_unique_id": "file_unique_id",
     },
     model=types.Audio,
 )
@@ -102,26 +104,21 @@ CONTACT = DatasetItem(
     model=types.Contact,
 )
 
-DICE = DatasetItem({"value": 6}, model=types.Dice)
+DICE = DatasetItem({"value": 6, "emoji": "🎲"}, model=types.Dice)
 
 DOCUMENT = DatasetItem(
     {
         "file_name": "test.docx",
         "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "file_id": "BQADAgADpgADy_JxS66XQTBRHFleAg",
+        "file_unique_id": "file_unique_id",
         "file_size": 21331,
     },
     model=types.Document,
 )
 
 ANIMATION = DatasetItem(
-    {
-        "file_name": "a9b0e0ca537aa344338f80978f0896b7.gif.mp4",
-        "mime_type": "video/mp4",
-        "thumb": PHOTO,
-        "file_id": "CgADBAAD4DUAAoceZAe2WiE9y0crrAI",
-        "file_size": 65837,
-    },
+    {"file_id": "file_id", "file_unique_id": "file_unique_id", "width": 50, "height": 50, "duration": 50},
     model=types.Animation,
 )
 
@@ -234,9 +231,13 @@ STICKER = DatasetItem(
         "height": 512,
         "emoji": "🛠",
         "set_name": "StickerSet",
-        "thumb": {"file_id": "AAbbCCddEEffGGhh1234567890", "file_size": 1234, "width": 128, "height": 128},
+        "thumb": PHOTO,
         "file_id": "AAbbCCddEEffGGhh1234567890",
         "file_size": 12345,
+        "file_unique_id": "file_unique_id",
+        "type": "type",
+        "is_animated": False,
+        "is_video": False,
     },
     model=types.Sticker,
 )
@@ -260,6 +261,7 @@ VIDEO = DatasetItem(
         "mime_type": "video/quicktime",
         "thumb": PHOTO,
         "file_id": "BAADAgpAADdawy_JxS72kRvV3cortAg",
+        "file_unique_id": "file_unique_id",
         "file_size": 10099782,
     },
     model=types.Video,
@@ -271,6 +273,7 @@ VIDEO_NOTE = DatasetItem(
         "length": 240,
         "thumb": PHOTO,
         "file_id": "AbCdEfGhIjKlMnOpQrStUvWxYz",
+        "file_unique_id": "file_unique_id",
         "file_size": 186562,
     },
     model=types.VideoNote,
@@ -281,12 +284,15 @@ VOICE = DatasetItem(
         "duration": 1,
         "mime_type": "audio/ogg",
         "file_id": "AwADawAgADADy_JxS2gopIVIIxlhAg",
+        "file_unique_id": "file_unique_id",
         "file_size": 4321,
     },
     model=types.Voice,
 )
 
-CALLBACK_QUERY = DatasetItem({"from": USER, "chat": CHAT, "data": "data"}, model=types.CallbackQuery)
+CALLBACK_QUERY = DatasetItem(
+    {"id": 12345678, "chat_instance": "AABBCC", "from": USER, "chat": CHAT, "data": "data"}, model=types.CallbackQuery
+)
 
 CHANNEL = DatasetItem(
     {
@@ -342,13 +348,7 @@ FORWARDED_MESSAGE = DatasetItem(
 )
 
 MESSAGE = DatasetItem(
-    {
-        "message_id": 11223,
-        "from": USER,
-        "chat": CHAT,
-        "date": 1508709711,
-        "text": "Hi, world!",
-    },
+    {"message_id": 11223, "from": USER, "chat": CHAT, "date": 1508709711, "text": "Hi, world!"},
     model=types.Message,
 )
 
@@ -593,11 +593,7 @@ USER_PROFILE_PHOTOS = DatasetItem(
 )
 
 FILE = DatasetItem(
-    {
-        "file_id": "XXXYYYZZZ",
-        "file_size": 5254,
-        "file_path": "voice/file_8",
-    },
+    {"file_id": "XXXYYYZZZ", "file_size": 5254, "file_path": "voice/file_8", "file_unique_id": "file_unique_id"},
     model=types.File,
 )
 

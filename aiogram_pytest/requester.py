@@ -1,12 +1,9 @@
-import inspect
-from typing import Callable
-from typing import Dict
-from unittest.mock import AsyncMock
-
 from aiogram.utils.helper import Helper
 from aiogram.utils.helper import Item
 
+from .exceptions import MethodIsNotCalledError
 from .handler import RequestHandler
+from .utils import camel_case2snake_case
 
 
 class RequestType(Helper):
@@ -133,13 +130,24 @@ class CallsList(list):
 
 
 class Calls:
-    def append_to_key(self, key, value):
-        attr = getattr(self, key)
-        attr.append(value)
-        setattr(self, key, attr)
+    def _get_attributes(self):
+        res = []
+        for item in dir(self):
+            if item.startswith("_") or item.endswith("_"):
+                continue
+
+            if not callable(getattr(self, item)):
+                res.append(item)
+
+        return tuple(res)
 
     def __getattr__(self, item):
-        return getattr(self, item)
+        if item in dir(self):
+            return getattr(self, item)
+        else:
+            raise MethodIsNotCalledError(
+                "method '{}' is not called.\nTry to use: {}".format(item, ", ".join(self._get_attributes()))
+            )
 
 
 class Requester:
@@ -148,31 +156,24 @@ class Requester:
 
     async def query(self, *args, **kwargs) -> Calls:
         await self._handler(*args, **kwargs)
-        return self._get_called_functions_arguments()
+        requests = self._handler.bot.session.requests
+        result = {}
+        for r in requests:
+            method_name = camel_case2snake_case(r.method)
 
-    def _get_called_functions_arguments(self) -> Calls:
-        result = self._build_result_object()
+            if method_name not in result:
+                result[method_name] = CallsList()
 
-        for name, method in self._get_bot_methods():
-            skip = (
-                name.startswith("_"),
-                name.endswith("_"),
-                not inspect.iscoroutinefunction(method),
-                not isinstance(method, AsyncMock),
-            )
-            if any(skip):
-                continue
+            result[method_name].append(self._dict_to_obj(r.data))
 
-            if method.call_count > 0:
-                trigger_type = RequestType.get_from_lowercase(name)
-                if trigger_type is not None:
-                    result.append_to_key(name, self._handler.parse_args(method.call_args))
+        return self._generate_result_obj(result)
 
-        return result
+    @staticmethod
+    def _dict_to_obj(data: dict):
+        GeneratedResponse = type("GeneratedResponse", (), data)
+        return GeneratedResponse()
 
-    def _get_bot_methods(self) -> Dict[str, Callable]:
-        return self._handler.bot.__dict__.items()
-
-    def _build_result_object(self) -> Calls:
-        GeneratedCalls = type("GeneratedCalls", (Calls,), {name: CallsList() for name, _ in self._get_bot_methods()})
+    @staticmethod
+    def _generate_result_obj(data: dict):
+        GeneratedCalls = type("GeneratedCalls", (Calls,), data)
         return GeneratedCalls()

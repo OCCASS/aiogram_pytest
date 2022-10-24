@@ -14,6 +14,10 @@ class DatasetItem(Mapping):
         return self._data
 
     @property
+    def name(self) -> str:
+        return self._name
+
+    @property
     def model(self) -> Any:
         return self._model
 
@@ -36,7 +40,7 @@ class DatasetItem(Mapping):
     def _recursive_as_object(self, data: dict, model: Any):
         """
         This method is converting dict data to object, if one of the params is the DatasetItem method will be
-        recursive convert it
+        recursive convert it;
 
         :param data: the dict that should be as object
         :param model: the object that will be returned
@@ -46,15 +50,14 @@ class DatasetItem(Mapping):
         for key, value in data.items():
             if isinstance(value, DatasetItem):
                 result_data[key] = self._recursive_as_object(value.data, value.model)
+            elif isinstance(value, list):
+                for index, item in enumerate(value):
+                    if not isinstance(item, (DatasetItem, list)):
+                        continue
+
+                    result_data[key][index] = self._recursive_as_object(item.data, item.model)
 
         return model(**result_data)
-
-    def __set_name__(self, owner, name):
-        if not name.isupper():
-            raise NameError("Name for helper item must be in uppercase!")
-
-        if self._name is None:
-            self._name = name
 
     def __iter__(self):
         return iter(self._data.keys())
